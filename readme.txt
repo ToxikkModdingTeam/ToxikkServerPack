@@ -1,4 +1,5 @@
-Run setup.cmd to install everything needed for a TOXIKK dedicated server.
+Download the latest installation package from https://github.com/ToxikkModdingTeam/ToxikkServerPack/releases
+and run setup.cmd to install everything needed for a TOXIKK dedicated server.
 
 Tools included in this installation package:
 - steamcmd (command line client for Steam): https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip
