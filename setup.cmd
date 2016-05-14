@@ -94,11 +94,11 @@ if not exist c:\steamcmd\steamapps\common\TOXIKK\Binaries\Win32\TOXIKK.exe (
 rem ---------------------------------------------------------
 rem add rule to windows firewall for TOXIKK.exe
 rem ---------------------------------------------------------
-netsh advfirewall firewall show rule "TOXIKK" >NUL 2>NUL
+netsh advfirewall firewall show rule "TOXIKK Server" >NUL 2>NUL
 if errorlevel 1 (
   echo.
   echo Adding TOXIKK to Windows firewall...
-  netsh advfirewall firewall add rule name="TOXIKK" dir=in action=allow program="c:\steamcmd\steamapps\common\TOXIKK\Binaries\Win32\TOXIKK.exe" enable=yes >NUL
+  netsh advfirewall firewall add rule name="TOXIKK Server" dir=in action=allow program="c:\steamcmd\steamapps\common\TOXIKK\Binaries\Win32\TOXIKK.exe" enable=yes >NUL
 )
 
 rem ---------------------------------------------------------
@@ -127,9 +127,12 @@ echo Installing ToxikkServerLauncher...
 copy /y "%cwd%\ToxikkServerLauncher\*" c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\ >NUL
 if errorlevel 1 goto error
 if not exist c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini call :createMyServerConfigIni
-rem create desktop shortcut
+rem create desktop shortcuts
 if not exist "%userprofile%\Desktop\TOXIKK Server.lnk" (
   powershell "$s=(New-Object -COM WScript.Shell).CreateShortcut('%userprofile%\Desktop\TOXIKK Server.lnk');$s.TargetPath='c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\ToxikkServerLauncher.exe';$s.IconLocation='c:\steamcmd\steamapps\common\TOXIKK\Binaries\Win32\TOXIKK.exe';$s.Save()"
+)
+if not exist "%userprofile%\Desktop\TOXIKK Config.lnk" (
+  powershell "$s=(New-Object -COM WScript.Shell).CreateShortcut('%userprofile%\Desktop\TOXIKK Config.lnk');$s.TargetPath='c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini';$s.Save()"
 )
 
 rem ---------------------------------------------------------
@@ -185,19 +188,25 @@ rem create file
 copy c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\ServerConfig.ini c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini >NUL
 rem fill out steam user/password
 call :getSteamLoginInfo
-if not "!steamPass!"=="" (
+if not "%steamPass%"=="" (
   "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "User=anonymous" "User=%steamUser%"
   "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "Password=anonymous" "Password=%steamPass%"
 ) 
-rem detect external IP address of this machine
-"%cwd%\curl.exe" -s http://api.ipify.org/ >"%temp%\external_ip.txt"
-if errorlevel 1 (
+rem detect external IP address of this machine, trying different services
+set extIp=
+for %%u in (http://api.ipify.org/ http://abpro.at/public_ip.php) do (
+  if "!extIp!"=="" (
+    "%cwd%\curl.exe" -s %%u >"%temp%\external_ip.txt"
+    if not errorlevel 1 set /p extIp=<"%temp%\external_ip.txt"
+  )
+)
+del "%temp%\external_ip.txt" 2>NUL
+if "%extIp%"=="" (
   echo ERROR: unable to detect your external IP address. Please configure @HttpRedirectUrl@ manually in MyServerConfig.ini
 ) else (
-  set /p extIp=<"%temp%\external_ip.txt"
-  del "%temp%\external_ip.txt"  
   "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "@HttpRedirectUrl@=" "@HttpRedirectUrl@=http://%extIp%/toxikkredirect/"
 )
+
 rem ask for server name
 set /p name="Enter a name for your server: "
 if not "%name%"=="" "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "ServerName=My Toxikk Server" "ServerName=%name%"
