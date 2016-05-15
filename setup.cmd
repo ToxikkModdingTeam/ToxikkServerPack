@@ -120,6 +120,16 @@ if not exist "%dllDir%\xinput1_3.dll" (
 )
 
 rem ---------------------------------------------------------
+rem install TOXIKK shader map cache for custom maps
+rem ---------------------------------------------------------
+if not exist c:\steamcmd\steamapps\common\TOXIKK\UDKGame\CookedPC\LocalShaderCache-PC-D3D-SM3.bak (
+  echo.
+  echo Installing shader map cache to support fast loading of supported custom maps
+  ren c:\steamcmd\steamapps\common\TOXIKK\UDKGame\CookedPC\LocalShaderCache-PC-D3D-SM3.upk *.bak
+  copy "%cwd%\TOXIKK\LocalShaderCache-PC-D3D-SM3.upk" c:\steamcmd\steamapps\common\TOXIKK\UDKGame\CookedPC\ >NUL
+)
+
+rem ---------------------------------------------------------
 rem install ToxikkServerLauncher in c:\steamcmd\SteamApps\Common\TOXIKK\TOXIKKServers
 rem ---------------------------------------------------------
 echo.
@@ -204,7 +214,7 @@ del "%temp%\external_ip.txt" 2>NUL
 if "%extIp%"=="" (
   echo ERROR: unable to detect your external IP address. Please configure @HttpRedirectUrl@ manually in MyServerConfig.ini
 ) else (
-  "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "@HttpRedirectUrl@=" "@HttpRedirectUrl@=http://%extIp%/toxikkredirect/"
+  "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "@HttpRedirectUrl@=" "@HttpRedirectUrl@=http://%extIp%:8800/toxikkredirect/"
 )
 
 rem ask for server name
