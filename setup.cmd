@@ -58,12 +58,11 @@ sc query nginx >NUL 2>NUL
 if errorlevel 1 (
   echo.
   echo Installing Windows service "nginx"
-  cd c:\nginx
-  ren winsw-1.18-bin.exe nginxsvc.exe 2>NUL
-  if errorlevel 1 goto error 
+  cd /d c:\nginx
   nginxsvc.exe install
   if errorlevel 1 goto error
   net start nginx
+  if errorlevel 1 goto error
 )
 
 rem ---------------------------------------------------------
