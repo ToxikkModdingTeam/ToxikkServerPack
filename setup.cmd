@@ -213,7 +213,7 @@ del "%temp%\external_ip.txt" 2>NUL
 if "%extIp%"=="" (
   echo ERROR: unable to detect your external IP address. Please configure @HttpRedirectUrl@ manually in MyServerConfig.ini
 ) else (
-  "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "@HttpRedirectUrl@=" "@HttpRedirectUrl@=http://%extIp%:8800/toxikkredirect/"
+  "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "@HttpRedirectUrl@=" "@HttpRedirectUrl@=http://%extIp%/toxikkredirect/"
 )
 
 rem ask for server name
