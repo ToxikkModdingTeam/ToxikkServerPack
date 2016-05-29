@@ -1,4 +1,4 @@
-ToxikkServerLaucher
+ToxikkServerLaucher (2.16)
 ===
 
 This tool centralizes configurations for many server instances on multiple machines.
@@ -16,6 +16,7 @@ Main features:
 Special names recognized on the left hand side of an assignment:
 - @Import=sectionname,... allows you to reuse common configuration parts. It can import other sections from the current file,
 or sections from other files, even in subdirectories. When using subdirectories, it also sets the source directory for files used with @Copy.   
+- @Keep=pattern,... specifies a list of patterns for files which should not be deleted in the configuration folder. Only works directly in \[DedicatedServerX\]
 - @Copy=file\[:newname\],... copies (and renames) configuration files for specific servers (e.g. MyMapList_CC.ini:DefaultMapList.ini).   
 - @CmdLine+=... adds startup parameters to the command line (-= can be used to remove default startup options).  
 - @ServerName=... sets the label for the server in the menu (to override the server's ServerName shown in the server browser)
@@ -23,7 +24,8 @@ or sections from other files, even in subdirectories. When using subdirectories,
 
 Assignment operators:
 = sets the setting to the right-hand-side of the assignment (overwriting previously defined values)
-:= unsets the setting (useful to reset a list before adding values)
+!= unsets the setting (useful to reset a list before adding values)
+:= same as !=
 .= appends the RHS value to the setting, allowing duplicates
 += appends the RHS value to the setting, avoiding duplicates
 *= prepends the RHS value to the setting, avoiding duplicates
@@ -34,8 +36,7 @@ Special values for the right hand side of an assignment:
 - @port,10000,2 calculates a port number as 10000 + 2*(X-1), where X is the number of \[DedicatedServerX\]
 - @skillClass,X converts the value X used for Toxikk's skill classes to a value for UDK's Difficulty setting
 - @env,varname returns the value of the environment variable "varname"
-- @id returns the X of \[DedicatedServerX\] for the current server. The value is 0 when generating a base/client configuration.
-- @loop {a1,a2,a3}{b1,b2}:line_with_placeholders  ... repeats the line for all permutations of (a1,a2,a3) x (b1,b2) x ...
+- @loop {a1,a2,a3}{b1,b2}:line_with_placeholders  ... repeats the line for all combinations of (a1,a2,a3) x (b1,b2) x ...
    Within the line_with_placeholders you can use @1@ to get the value of the 1st list. 
    A list value can contain sub-values separated by '|'. You can use @1.1@ to get the 1st sub-value of @1@
    Enclose values with double quotes if they contain commas or '|'. The double quotes will be removed from @1@
@@ -45,6 +46,7 @@ Variables automatically defined by the launcher (useful for @Copy instruction):
 - @WorkshopDir@: value of \[ServerLauncher\] WorkshopDir. It's where steamcmd downloads the TOXIKK items to (steamapps\\workshop\\content\\324810).
 - @HttpRedirectDir@: value of \[ServerLauncher\] HttpRedirctDir. It's where your HTTP server picks up the files for the HTTPRedirectUrl.
 - @ConfigDir@: set to ...\\TOXIKK\\UDKGame\\Config\\DedicatedServerX for the server configuration currently being generated.
+- @id@: returns the X of \[DedicatedServerX\] for the current server. The value is 0 when generating a base/client configuration.
 - @1@, @2@, ...: current value(s) of the @loop permutation
 - @1.1@, @1.2@, ...: parts of @1@ separated by |
 
@@ -75,6 +77,9 @@ All settings in MyServerConfig.ini which don't refer to an INI file are used as 
 ServerConfig.ini
 ----------------
 There are a lot of comments inside the file to help you build your own config.
+
+An optional \[Hosts\] section can contain lines with \<logical-machine-name\> = \<physical-machine-name\>\[,...\].
+This can be used to use more readable names than VPS machine names or use the same machine-specific config for multiple machines.
 
 The \[ServerLauncher\] section contains some settings for the launcher itself, mostly directory names you need to adjust. 
 If you use the file for multiple machines, you can also define a \[ServerLauncher:\<machinename\>\] section to set/override settings specific for a machine.

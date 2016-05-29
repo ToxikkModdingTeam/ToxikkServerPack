@@ -88,6 +88,10 @@ if not exist c:\steamcmd\steamapps\common\TOXIKK\Binaries\Win32\TOXIKK.exe (
     cd /d c:\steamcmd
     steamcmd.exe +login "!steamUser!" "!steamPass!" +app_update 324810 validate +quit
   )
+  if not exist c:\steamcmd\steamapps\common\TOXIKK\Binaries\Win32\TOXIKK.exe (
+    echo ERROR - make sure TOXIKK is installed as c:\steamcmd\steamapps\common\TOXIKK\Binaries\Win32\TOXIKK.exe
+	goto :error
+  )
 )
 
 rem ---------------------------------------------------------
@@ -169,7 +173,7 @@ pause
 exit /b
 
 rem ----------------------
-rem read steam login+password from c:\steamcmd\steam_user.txt and steam_pass.txt -or- prompt the user for input
+rem prompt for steam login+password
 rem ---------------------
 :getSteamLoginInfo
 if not "%steamUser%"=="" if not "%steamPass%"=="" exit /b
@@ -177,15 +181,10 @@ set steamUser=
 set steamPass=
 cd /d c:\steamcmd
 if exist steam_user.txt (set /p steamUser=<steam_user.txt)
-if "%steamUser%"=="" (
-  set /p steamUser="Steam username: "
-  if not "!steamUser!"=="" (echo !steamUser!>steam_user.txt) else exit /b
-)
-if exist steam_pass.txt (set /p steamPass=<steam_pass.txt)
-if "%steamPass%"=="" (
-  set /p steamPass="Steam password: "
-  if not "!steamPass!"=="" (echo !steamPass!>steam_pass.txt) else set steamUser=
-)
+if "%steamUser%"=="" set /p steamUser="Steam username: "
+if "%steamUser%"=="" exit /b
+if "%steamPass%"=="" set /p steamPass="Steam password: "
+if "%steamPass%"=="" set steamUser=
 exit /b
 
 
