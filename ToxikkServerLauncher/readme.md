@@ -1,11 +1,11 @@
-ToxikkServerLaucher (2.16)
+ToxikkServerLaucher (2.17)
 ===
 
 This tool centralizes configurations for many server instances on multiple machines.
 
 Main features:
 - update TOXIKK and workshop items through steamcmd.exe
-- automatically copies downloaded workshop items into TOXIKK and HTTP redirect folders
+- automatically copies downloaded workshop items to TOXIKK and HTTP redirect folders
 - single centralized configuration file used to dynamically generate config folders and files for individual servers and machines.
 - builds the command line with server specific options needed to launch TOXIKK.exe as a dedicated server.
 - friendly settings names instead of the real INI or command line option names.
@@ -86,6 +86,7 @@ If you use the file for multiple machines, you can also define a \[ServerLaunche
 
 The \[SteamWorkshop\] section contains your login information and the workshop item numbers you want to download/update.
 If you use the file for multiple machines, you can also define a \[SteamWorkshop:\<machinename\>\] section which will replace the default section as a whole for a machine.
+The value for Item=... entries can either be a numeric steam workshop ID, a URL to a .zip file or a local subdirectory name of your workshop folder.
 
 The \[SimpleNames\] section can be used to define friendlier names to be used inside your other sections instead of the full INI path or command line option name.
 There are no machine specific overrides for this section.
