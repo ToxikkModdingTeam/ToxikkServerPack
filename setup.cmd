@@ -84,9 +84,9 @@ if not exist c:\steamcmd\steamapps\common\TOXIKK\Binaries\Win32\TOXIKK.exe (
   echo.
   echo Installing TOXIKK...
   call :getSteamLoginInfo
-  if not "!steamPass!"=="" (
+  if not "!steamUser!"=="" (
     cd /d c:\steamcmd
-    steamcmd.exe +login "!steamUser!" "!steamPass!" +app_update 324810 validate +quit
+    steamcmd.exe +login "!steamUser!" +app_update 324810 validate +quit
   )
   if not exist c:\steamcmd\steamapps\common\TOXIKK\Binaries\Win32\TOXIKK.exe (
     echo ERROR - make sure TOXIKK is installed as c:\steamcmd\steamapps\common\TOXIKK\Binaries\Win32\TOXIKK.exe
@@ -173,18 +173,14 @@ pause
 exit /b
 
 rem ----------------------
-rem prompt for steam login+password
+rem prompt for steam login
 rem ---------------------
 :getSteamLoginInfo
-if not "%steamUser%"=="" if not "%steamPass%"=="" exit /b
+if not "%steamUser%"=="" exit /b
 set steamUser=
-set steamPass=
 cd /d c:\steamcmd
 if exist steam_user.txt (set /p steamUser=<steam_user.txt)
 if "%steamUser%"=="" set /p steamUser="Steam username: "
-if "%steamUser%"=="" exit /b
-if "%steamPass%"=="" set /p steamPass="Steam password: "
-if "%steamPass%"=="" set steamUser=
 exit /b
 
 
@@ -194,11 +190,10 @@ rem ---------------------
 :createMyServerConfigIni
 rem create file
 copy c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\ServerConfig.ini c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini >NUL
-rem fill out steam user/password
+rem fill out steam user
 call :getSteamLoginInfo
-if not "%steamPass%"=="" (
+if not "%steamUser%"=="" (
   "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "User=anonymous" "User=%steamUser%"
-  "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "Password=anonymous" "Password=%steamPass%"
 ) 
 rem detect external IP address of this machine, trying different services
 set extIp=
