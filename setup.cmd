@@ -189,17 +189,18 @@ rem create MyServerConfig.ini file with some custom settings
 rem ---------------------
 :createMyServerConfigIni
 rem create file
-copy c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\ServerConfig.ini c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini >NUL
+set myIni=c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini
+copy c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\ServerConfig.ini %myIni% >NUL
 rem fill out steam user
 call :getSteamLoginInfo
 if not "%steamUser%"=="" (
-  "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "User=anonymous" "User=%steamUser%"
+  powershell "$content = [System.IO.File]::ReadAllText('%myIni%').Replace('User=anonymous','User=%steamUser%'); [System.IO.File]::WriteAllText('%myIni%', $content)"
 ) 
 rem detect external IP address of this machine, trying different services
 set extIp=
 for %%u in (http://api.ipify.org/ http://abpro.at/public_ip.php) do (
   if "!extIp!"=="" (
-    "%cwd%\curl.exe" -s %%u >"%temp%\external_ip.txt"
+    powershell "$wc=New-Object System.Net.WebClient;$wc.DownloadFile('%%u', '%temp%\external_ip.txt')"
     if not errorlevel 1 set /p extIp=<"%temp%\external_ip.txt"
   )
 )
@@ -207,10 +208,12 @@ del "%temp%\external_ip.txt" 2>NUL
 if "%extIp%"=="" (
   echo ERROR: unable to detect your external IP address. Please configure @HttpRedirectUrl@ manually in MyServerConfig.ini
 ) else (
-  "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "@HttpRedirectUrl@=" "@HttpRedirectUrl@=http://%extIp%/toxikkredirect/"
+  powershell "$content = [System.IO.File]::ReadAllText('%myIni%').Replace('@HttpRedirectUrl@=','@HttpRedirectUrl@=http://%extIp%/toxikkredirect/'); [System.IO.File]::WriteAllText('%myIni%', $content)"
 )
 
 rem ask for server name
 set /p name="Enter a name for your server: "
-if not "%name%"=="" "%cwd%\fart.exe" -q c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini "ServerName=My Toxikk Server" "ServerName=%name%"
+if not "%name%"=="" (
+  powershell "$content = [System.IO.File]::ReadAllText('%myIni%').Replace('ServerName=My Toxikk Server','ServerName=%name%'); [System.IO.File]::WriteAllText('%myIni%', $content)"
+)
 exit /b
