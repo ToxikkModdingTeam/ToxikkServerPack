@@ -157,8 +157,8 @@ if exist "%programfiles%\Notepad++\Notepad++.exe" set editor=%programfiles%\Note
 echo.
 echo --------------------------------
 echo SUCCESS
-echo Edit c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini to configure workshop items, maps, server settings, ...
-echo Use the "TOXIKK Server Launcher" shortcut on your desktop to start a server. Use "-h" for help about its command line options.
+echo Edit c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers\MyServerConfig.ini to configure workshop items, maps, ...
+echo Use the "TOXIKK Server Launcher" shortcut on your desktop to start servers and get additional help.
 cd /d c:\steamcmd\steamapps\common\TOXIKK\TOXIKKServers
 "%editor%" MyServerConfig.ini
 pause
@@ -214,6 +214,6 @@ if "%extIp%"=="" (
 rem ask for server name
 set /p name="Enter a name for your server: "
 if not "%name%"=="" (
-  powershell "$content = [System.IO.File]::ReadAllText('%myIni%').Replace('ServerName=My Toxikk Server','ServerName=%name%'); [System.IO.File]::WriteAllText('%myIni%', $content)"
+  powershell "$content = [System.IO.File]::ReadAllText('%myIni%').Replace('ServerName=My Toxikk Server','ServerName=%name:'=''%'); [System.IO.File]::WriteAllText('%myIni%', $content)"
 )
 exit /b
